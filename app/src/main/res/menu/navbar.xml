@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn = "navigation_view">
+
+    <group
+        android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/home"
+            android:icon="@drawable/baseline_home_24"
+            android:title="Home"/>
+
+        <item
+            android:id="@+id/edit"
+            android:icon="@drawable/baseline_edit_24"
+            android:title="Edit Profile"/>
+
+        <item
+            android:id="@+id/Show"
+            android:icon="@drawable/baseline_remove_red_eye_24"
+            android:title="Show Profile"/>
+
+        <item
+            android:id="@+id/about"
+            android:icon="@drawable/baseline_info_24"
+            android:title="About Us"/>
+    </group>
+    <item
+        android:title="">
+
+        <menu>
+            <item
+                android:id="@+id/logout"
+                android:icon="@drawable/baseline_exit_to_app_24"
+                android:title="Logout"/>
+        </menu>
+
+    </item>
+
+</menu>
