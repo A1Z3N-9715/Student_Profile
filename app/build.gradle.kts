@@ -1,3 +1,5 @@
+import org.gradle.configurationcache.problems.StructuredMessage
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.google.gms.google.services)
@@ -33,6 +35,7 @@ android {
 }
 
 dependencies {
+
 
     implementation(libs.appcompat)
     implementation(libs.material)

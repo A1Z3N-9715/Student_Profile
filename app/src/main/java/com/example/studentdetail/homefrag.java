@@ -1,12 +1,14 @@
 package com.example.studentdetail;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
-
 import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -15,28 +17,20 @@ import android.view.ViewGroup;
  */
 public class homefrag extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    private TextView name, roll, dept, stay;
+    private ImageView imageView;
+    private String imagePath;
 
     public homefrag() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment homefrag.
-     */
-    // TODO: Rename and change types and number of parameters
     public static homefrag newInstance(String param1, String param2) {
         homefrag fragment = new homefrag();
         Bundle args = new Bundle();
@@ -58,7 +52,39 @@ public class homefrag extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_homefrag, container, false);
+        View view = inflater.inflate(R.layout.fragment_homefrag, container, false);
+
+        name = view.findViewById(R.id.diplay_name);
+        roll = view.findViewById(R.id.display_roll);
+        dept = view.findViewById(R.id.display_dept);
+        stay = view.findViewById(R.id.diplay_stay);
+        imageView = view.findViewById(R.id.display_photo);
+
+        // Set up the FragmentResultListener
+        getParentFragmentManager().setFragmentResultListener("requestKey", this, (requestKey, bundle) -> {
+            String Namevalue = bundle.getString("name");
+            String Rollvalue = bundle.getString("roll");
+            String Deptvalue = bundle.getString("dept");
+            String Stayvalue = bundle.getString("stay");
+            imagePath = bundle.getString("image_path"); // Get the image path from the bundle
+
+
+            name.setText(Namevalue);
+            roll.setText(Rollvalue);
+            dept.setText(Deptvalue);
+            if (Stayvalue.equals("Hostel")) {
+                stay.setText("H");} else if (Stayvalue.equals("Dayscholar")) {
+                stay.setText("D");} else  {
+                stay.setText("OP");
+
+            }
+
+
+            // Load image
+            Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
+            imageView.setImageBitmap(bitmap);
+        });
+
+        return view;
     }
 }
