@@ -7,7 +7,8 @@
     android:layout_height="match_parent"
     android:fillViewport="true"
     android:background="@drawable/excel"
-    tools:context=".editfrag">
+    tools:context=".MainActivity">
+
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -506,7 +507,12 @@
             app:layout_constraintTop_toBottomOf="@+id/Photo" />
 
 
+
+
+
+
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 
 
 
