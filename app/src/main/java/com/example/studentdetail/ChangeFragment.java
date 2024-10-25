@@ -56,8 +56,8 @@ public class ChangeFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_change, container, false);
         databaseReference = FirebaseDatabase.getInstance().getReference();
         storageReference = FirebaseStorage.getInstance().getReference("Photos"); // Reference to the storage
-        SharedPreferences sharedPref = getActivity().getSharedPreferences("UserPref", Context.MODE_PRIVATE);
-        rollNo = sharedPref.getString("roll_no", null);
+        SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("MySharedPref", Context.MODE_PRIVATE);
+        String rollNo = sharedPreferences.getString("roll no", "");
         btnChange = view.findViewById(R.id.button2);
         btnChange.setOnClickListener(v -> {
             if (rollNo != null) {
@@ -78,20 +78,47 @@ public class ChangeFragment extends Fragment {
     }
 
     private void deleteStudentDetails(String rollNo) {
-        databaseReference.child("students").child(rollNo).removeValue().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                Toast.makeText(getContext(), "Student details deleted successfully.", Toast.LENGTH_SHORT).show();
+        // Define the fields to keep
+        databaseReference.child("students").child(rollNo).get().addOnCompleteListener(task -> {
+            if (task.isSuccessful() && task.getResult() != null) {
+                DataSnapshot snapshot = task.getResult();
+
+                // Retrieve the values of roll no and email before deleting other details
+                String savedRollNo = snapshot.child("roll no").getValue(String.class);
+                String savedEmail = snapshot.child("email").getValue(String.class);
+
+                // Remove other details except roll no and email
+                databaseReference.child("students").child(rollNo)
+                        .child("Name").removeValue();
+                databaseReference.child("students").child(rollNo)
+                        .child("Address").removeValue();
+                databaseReference.child("students").child(rollNo)
+                        .child("CGPA").removeValue();
+                databaseReference.child("students").child(rollNo)
+                        .child("DOB").removeValue();
+                databaseReference.child("students").child(rollNo)
+                        .child("Department").removeValue();
+                databaseReference.child("students").child(rollNo)
+                        .child("Phone").removeValue();
+                databaseReference.child("students").child(rollNo)
+                        .child("Stay").removeValue();
+                databaseReference.child("students").child(rollNo)
+                        .child("Stay_no").removeValue();
+                databaseReference.child("students").child(rollNo)
+                        .child("Year").removeValue();
+
+                Toast.makeText(getContext(), "Student details deleted, roll no and email retained.", Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(getContext(), "Failed to delete student details.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Failed to retrieve student details.", Toast.LENGTH_SHORT).show();
             }
         });
     }
+
 
     private void deleteStudentPhoto(String rollNo) {
         StorageReference photoRef = storageReference.child(rollNo + ".jpg");
 
         photoRef.delete().addOnSuccessListener(aVoid -> {
-            Toast.makeText(getContext(), "Photo deleted successfully.", Toast.LENGTH_SHORT).show();
         }).addOnFailureListener(e -> {
             Toast.makeText(getContext(), "Failed to delete photo: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         });

@@ -18,8 +18,10 @@ import android.widget.Toast;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -64,7 +66,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             case R.id.edit:
                 // Check roll number in Firebase and navigate accordingly
-                checkRollNoForEdit();
+                checkNameForEdit();
                 break;
 
             case R.id.about:
@@ -99,26 +101,43 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         getOnBackPressedDispatcher().addCallback(this, callback);
     }
 
-    private void checkRollNoForEdit() {
-        SharedPreferences sharedPref = getSharedPreferences("UserPref", Context.MODE_PRIVATE);
-        String rollNo = sharedPref.getString("roll_no", null);
-
+    private void checkNameForEdit() {
+        SharedPreferences sharedPreferences = getSharedPreferences("MySharedPref", Context.MODE_PRIVATE);
+        String rollNo = sharedPreferences.getString("roll no", "");
         if (rollNo != null) {
-            databaseReference.child(rollNo).get().addOnCompleteListener(task -> {
-                if (task.isSuccessful()) {
-                    DataSnapshot snapshot = task.getResult();
-                    if (snapshot.exists()) {
-                        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new ChangeFragment()).commit();
-                    } else {
-                        Toast.makeText(MainActivity.this, "Roll number not found, redirecting to Edit...", Toast.LENGTH_SHORT).show();
-                        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new EditFragment()).commit();
-                    }
-                } else {
-                    Toast.makeText(MainActivity.this, "Error checking roll number", Toast.LENGTH_SHORT).show();
-                }
-            });
-        } else {
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new EditFragment()).commit();
+            // Query the database for the name associated with the roll number
+            databaseReference.orderByChild("Roll No").equalTo(rollNo)
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot rollSnapshot) {
+                            if (rollSnapshot.exists()) {
+                                for (DataSnapshot snapshot : rollSnapshot.getChildren()) {
+
+                                    String name = snapshot.child("Name").getValue(String.class);
+                                    if (name != null) {
+                                        // If a name exists for the roll number, navigate to ChangeFragment
+                                        getSupportFragmentManager().beginTransaction()
+                                                .replace(R.id.fragment_container, new ChangeFragment())
+                                                .commit();
+                                        return; // Exit the loop after the transaction
+                                    }
+                                }
+                            }
+                            // If no name exists for the roll number, navigate to EditFragment
+                            getSupportFragmentManager().beginTransaction()
+                                    .replace(R.id.fragment_container, new EditFragment())
+                                    .commit();
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                            Toast.makeText(MainActivity.this, "Error checking roll number", Toast.LENGTH_SHORT).show();
+                        }
+                    });
         }
     }
+
+
+
+
 }

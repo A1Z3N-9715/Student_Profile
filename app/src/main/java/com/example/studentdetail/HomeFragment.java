@@ -13,7 +13,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -51,15 +50,13 @@ public class HomeFragment extends Fragment {
         Id = view.findViewById(R.id.imageView2);
         slash = view.findViewById(R.id.textView13);
         notice = view.findViewById(R.id.notice);
-
-        SharedPreferences sharedPref = getActivity().getSharedPreferences("UserPref", Context.MODE_PRIVATE);
-        String rollNo = sharedPref.getString("roll_no", null);
-
+        SharedPreferences sharedPref = requireActivity().getSharedPreferences("MySharedPref", Context.MODE_PRIVATE);
+        String rollNo = sharedPref.getString("roll no", null);
         if (rollNo != null) {
             fetchStudentDetails(rollNo);
         } else {
-            Toast.makeText(getContext(), "Details were not entered yet.", Toast.LENGTH_SHORT).show();
             clearTextViews();
+            Toast.makeText(getContext(), "Roll number not found", Toast.LENGTH_SHORT).show();
         }
 
         return view;
@@ -73,12 +70,12 @@ public class HomeFragment extends Fragment {
                     String name = snapshot.child("Name").getValue(String.class);
                     String department = snapshot.child("Department").getValue(String.class);
                     String stay = snapshot.child("Stay").getValue(String.class);
-                    String roll = snapshot.child("Roll").getValue(String.class);
-                    tvDisplayName.setText(name != null ? name : "N/A");
-                    tvDisplayRoll.setText(roll != null ? roll : "N/A");
-                    tvDisplayDept.setText(department != null ? department : "N/A");
+                    String roll = snapshot.child("Roll No").getValue(String.class);
+                    tvDisplayName.setText(name != null ? name : "");
+                    tvDisplayRoll.setText(roll != null ? roll : "");
+                    tvDisplayDept.setText(department != null ? department : "");
                     if (stay == null) {
-                        tvDisplayStay.setText("N/A");
+                        tvDisplayStay.setText("");
                     } else if (stay.equals("Dayscholar")) {
                         tvDisplayStay.setText("D");
                     } else if (stay.equals("Outpass")) {
@@ -87,13 +84,15 @@ public class HomeFragment extends Fragment {
                         tvDisplayStay.setText("H");
                     }
                     loadStudentPhoto(rollNo);
+                    if(tvDisplayName.getText().toString().isEmpty()){
+                        clearTextViews();
+                    }
                 } else {
-                    Toast.makeText(getContext(), "Details were not entered yet.", Toast.LENGTH_SHORT).show();
                     clearTextViews();
+                    Toast.makeText(getContext(), "No details found for roll number", Toast.LENGTH_SHORT).show();
                 }
             } else {
                 Log.e(TAG, "Error fetching student details", task.getException());
-                Toast.makeText(getContext(), "Error fetching details: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                 clearTextViews();
             }
         });
@@ -101,18 +100,15 @@ public class HomeFragment extends Fragment {
 
     private void loadStudentPhoto(String rollNo) {
         StorageReference photoRef = storageReference.child(rollNo + ".jpg");
-
         photoRef.getBytes(MAX_DOWNLOAD_SIZE).addOnSuccessListener(bytes -> {
             Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
             if (bitmap != null) {
                 ivDisplayPhoto.setImageBitmap(bitmap);
             } else {
-                ivDisplayPhoto.setImageResource(R.drawable.profile);
-                Toast.makeText(getContext(), "Failed to decode image.", Toast.LENGTH_SHORT).show();
+                ivDisplayPhoto.setVisibility(View.GONE); // Default image if download fails
             }
         }).addOnFailureListener(e -> {
-            ivDisplayPhoto.setImageResource(R.drawable.profile);
-            Toast.makeText(getContext(), "Failed to load photo: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            ivDisplayPhoto.setVisibility(View.GONE);
             Log.e(TAG, "Error loading student photo", e);
         });
     }
@@ -127,6 +123,4 @@ public class HomeFragment extends Fragment {
         ivDisplayPhoto.setVisibility(View.GONE);
         notice.setVisibility(View.VISIBLE);
     }
-
-
 }

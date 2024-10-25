@@ -1,17 +1,340 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/excel"
+    android:padding="10dp"
     tools:context=".showffrag">
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Show Profile"
-        android:textSize="30sp"
-        android:gravity="center"
-        android:layout_centerInParent="true"
-        android:textColor="#2196F3"/>
 
-</RelativeLayout>
+    <TextView
+        android:id="@+id/textViewNameLabel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:padding="4dp"
+        android:text="Name:"
+        android:textColor="#00B0FF"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/textViewRollNoLabel"
+        app:layout_constraintEnd_toStartOf="@+id/textViewName"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textViewName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:padding="4dp"
+        android:text="XYZ"
+        android:textColor="#000000"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/textViewRollNo"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/textViewNameLabel"
+        app:layout_constraintTop_toTopOf="@+id/textViewNameLabel"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/textViewRollNoLabel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:padding="4dp"
+        android:text="Roll No:"
+        android:textColor="#00B0FF"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/textViewDOBLabel"
+        app:layout_constraintEnd_toStartOf="@+id/textViewRollNo"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewNameLabel"
+        app:layout_marginBaseline="10dp" />
+
+    <TextView
+        android:id="@+id/textViewRollNo"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:padding="4dp"
+        android:text="123"
+        android:textColor="#000000"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/textViewDOB"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/textViewRollNoLabel"
+        app:layout_constraintTop_toTopOf="@+id/textViewRollNoLabel"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/textViewDOBLabel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:padding="4dp"
+        android:text="DOB:"
+        android:textColor="#00B0FF"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/textViewDepartmentLabel"
+        app:layout_constraintEnd_toStartOf="@+id/textViewDOB"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewRollNoLabel"
+        app:layout_marginBaseline="10dp" />
+
+    <TextView
+        android:id="@+id/textViewDOB"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:padding="4dp"
+        android:text="2000-01-01"
+        android:textColor="#000000"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/textViewDepartment"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/textViewDOBLabel"
+        app:layout_constraintTop_toTopOf="@+id/textViewDOBLabel"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/textViewDepartmentLabel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:padding="4dp"
+        android:text="Department:"
+        android:textColor="#00B0FF"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/textViewYearOfStudyLabel"
+        app:layout_constraintEnd_toStartOf="@+id/textViewDepartment"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewDOBLabel"
+        app:layout_marginBaseline="10dp" />
+
+    <TextView
+        android:id="@+id/textViewDepartment"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:padding="4dp"
+        android:text="Other"
+        android:textColor="#000000"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/textViewYearOfStudy"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/textViewDepartmentLabel"
+        app:layout_constraintTop_toTopOf="@+id/textViewDepartmentLabel"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/textViewYearOfStudyLabel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:padding="4dp"
+        android:text="Year of Study:"
+        android:textColor="#00B0FF"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/textViewStayLabel"
+        app:layout_constraintEnd_toStartOf="@+id/textViewYearOfStudy"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewDepartmentLabel"
+        app:layout_marginBaseline="10dp" />
+
+    <TextView
+        android:id="@+id/textViewYearOfStudy"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:padding="4dp"
+        android:text="III"
+        android:textColor="#000000"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/textViewStay"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/textViewYearOfStudyLabel"
+        app:layout_constraintTop_toTopOf="@+id/textViewYearOfStudyLabel"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/textViewStayLabel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:padding="4dp"
+        android:text="Stay:"
+        android:textColor="#00B0FF"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/textViewBusRoomNoLabel"
+        app:layout_constraintEnd_toStartOf="@+id/textViewStay"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewYearOfStudyLabel"
+        app:layout_marginBaseline="10dp" />
+
+    <TextView
+        android:id="@+id/textViewStay"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:padding="4dp"
+        android:text="Dayscholar"
+        android:textColor="#000000"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/textViewBusRoomNo"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/textViewStayLabel"
+        app:layout_constraintTop_toTopOf="@+id/textViewStayLabel"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/textViewBusRoomNoLabel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:padding="4dp"
+        android:text="Bus/Room No:"
+        android:textColor="#00B0FF"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/textViewCGPALabel"
+        app:layout_constraintEnd_toStartOf="@+id/textViewBusRoomNo"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewStayLabel" />
+
+    <TextView
+        android:id="@+id/textViewBusRoomNo"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:padding="4dp"
+        android:text="2"
+        android:textColor="#000000"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/textViewCGPA"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/textViewBusRoomNoLabel"
+        app:layout_constraintTop_toTopOf="@+id/textViewBusRoomNoLabel"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/textViewCGPALabel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:padding="4dp"
+        android:text="CGPA:"
+        android:textColor="#00B0FF"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/textViewPhoneNumberLabel"
+        app:layout_constraintEnd_toStartOf="@+id/textViewCGPA"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewBusRoomNoLabel" />
+
+    <TextView
+        android:id="@+id/textViewCGPA"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:padding="4dp"
+        android:text="2.0"
+        android:textColor="#000000"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/textViewPhoneNumber"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/textViewCGPALabel"
+        app:layout_constraintTop_toTopOf="@+id/textViewCGPALabel"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/textViewPhoneNumberLabel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        android:padding="4dp"
+        android:text="Phone No:"
+        android:textColor="#00B0FF"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/textViewAddressLabel"
+        app:layout_constraintEnd_toStartOf="@+id/textViewPhoneNumber"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewCGPALabel"
+        app:layout_marginBaseline="10dp" />
+
+    <TextView
+        android:id="@+id/textViewPhoneNumber"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:padding="4dp"
+        android:text="9876543210"
+        android:textColor="#000000"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/textViewAddress"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/textViewPhoneNumberLabel"
+        app:layout_constraintTop_toTopOf="@+id/textViewPhoneNumberLabel"
+        app:layout_constraintVertical_bias="0.0"
+        app:layout_marginBaseline="10dp" />
+
+    <TextView
+        android:id="@+id/textViewAddressLabel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="10dp"
+        android:padding="4dp"
+        android:text="Address:"
+        android:textColor="#00B0FF"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/textViewAddress"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewPhoneNumberLabel"
+        app:layout_constraintVertical_bias="0.05" />
+
+    <TextView
+        android:id="@+id/textViewAddress"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:padding="4dp"
+        android:text="3, Street Name"
+        android:textColor="#000000"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/textViewAddressLabel"
+        app:layout_constraintTop_toTopOf="@+id/textViewAddressLabel"
+        app:layout_constraintVertical_bias="0.0" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

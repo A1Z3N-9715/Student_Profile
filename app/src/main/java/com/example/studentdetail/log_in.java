@@ -1,6 +1,7 @@
 package com.example.studentdetail;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Patterns;
@@ -14,94 +15,142 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class log_in extends AppCompatActivity {
-    TextView t3;
-    Button log;
-    EditText mail, pass;
-    ProgressBar progressBar;
+
+    private EditText emailInput, passwordInput;
+    private Button loginButton;
+    private ProgressBar progressBar;
+    private TextView registerText,textView;
+
+    private FirebaseAuth auth;
+    private DatabaseReference databaseReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_log_in);
-        t3 = findViewById(R.id.t3);
-        log = findViewById(R.id.b1);
-        mail = findViewById(R.id.mail);
-        pass = findViewById(R.id.pass);
+
+        // Initialize Firebase Auth and Database Reference
+        auth = FirebaseAuth.getInstance();
+        databaseReference = FirebaseDatabase.getInstance().getReference("students");
+
+        // Initialize UI elements
+        emailInput = findViewById(R.id.mail);
+        textView = findViewById(R.id.textView2);
+        passwordInput = findViewById(R.id.pass);
+        loginButton = findViewById(R.id.b1);
         progressBar = findViewById(R.id.pb);
-        log.setOnClickListener(view -> login());
-        t3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(log_in.this, Create_account.class));
-           finish(); }
+        registerText = findViewById(R.id.t3);
+
+        // Redirect to registration activity
+        registerText.setOnClickListener(view -> {
+            startActivity(new Intent(log_in.this, Create_account.class));
+            finish();
         });
-            }
 
+        // Login on button click
+        loginButton.setOnClickListener(view -> loginUser());
+    }
 
+    private void loginUser() {
+        String email = emailInput.getText().toString().trim();
+        String password = passwordInput.getText().toString().trim();
 
-    void login() {
-        String email = mail.getText().toString();
-        String password = pass.getText().toString();
-        boolean isvalid = valid(email, password);
-        if (!isvalid) {
+        // Validate input
+        if (!validateInputs(email, password)) {
             return;
         }
 
-        logacc(email, password);
-    }
+        // Show progress bar
+        showProgress(true);
 
-    void logacc(String email, String password) {
-        pbar(true);
-        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
-        firebaseAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                pbar(false);
-                if (task.isSuccessful()) {
-                    if(firebaseAuth.getCurrentUser().isEmailVerified()){
-                        Toast.makeText(log_in.this, "Login Successful", Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(log_in.this, MainActivity.class));
-                        finish();
+        // Sign in with email and password
+        auth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, task -> {
+                    showProgress(false);
+                    if (task.isSuccessful()) {
+                        FirebaseUser user = auth.getCurrentUser();
+                        if (user != null && user.isEmailVerified()) {
+                            // Fetch and save user roll number from Realtime Database
+                            fetchUserRollNo(user.getEmail());
+                        } else {
+                            // Send verification email if not verified
+                            if (user != null) {
+                                user.sendEmailVerification();
+                                auth.signOut();
+                            }
+                            Toast.makeText(log_in.this, "Please verify your email", Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        Toast.makeText(log_in.this, "Login failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                     }
-                    else{
-                        Toast.makeText(log_in.this, "Please Verify your Email", Toast.LENGTH_SHORT).show();
-                    }
-                } else {
-                    Toast.makeText(log_in.this, task.getException().getLocalizedMessage(), Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
+                });
     }
 
-
-    void pbar(boolean inprogress) {
-        if (inprogress) {
-            progressBar.setVisibility(View.VISIBLE);
-            log.setVisibility(View.GONE);
-        } else {
-            progressBar.setVisibility(View.GONE);
-            log.setVisibility(View.VISIBLE);
-        }
-    }
-
-    boolean valid(String email, String password) {
-        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            mail.setError("Invalid Email");
+    private boolean validateInputs(String email, String password) {
+        if (TextUtils.isEmpty(email)) {
+            emailInput.setError("Email is required");
+            emailInput.requestFocus();
             return false;
-
         }
-        if (password.length() < 6) {
-            pass.setError("Password is Invalid");
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            emailInput.setError("Enter a valid email");
+            emailInput.requestFocus();
+            return false;
+        }
+        if (TextUtils.isEmpty(password) || password.length() < 6) {
+            passwordInput.setError("Password should be at least 6 characters");
+            passwordInput.requestFocus();
             return false;
         }
         return true;
+    }
+
+    private void fetchUserRollNo(String email) {
+        // Query the database for the student's roll number using their email
+        databaseReference.orderByChild("Email").equalTo(email)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.exists()) {
+                            for (DataSnapshot userSnapshot : snapshot.getChildren()) {
+                                String rollNo = userSnapshot.child("Roll No").getValue(String.class);
+
+                                if (rollNo != null) {
+                                    // Save roll number to SharedPreferences
+                                    SharedPreferences sharedPreferences = getSharedPreferences("MySharedPref", MODE_PRIVATE);
+                                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                                    editor.putString("roll no", rollNo);
+                                    editor.apply();
+
+                                    Toast.makeText(log_in.this, "Login successful", Toast.LENGTH_SHORT).show();
+                                    startActivity(new Intent(log_in.this, MainActivity.class)); // Navigate to home page or dashboard
+                                    finish();
+                                    break;
+                                }
+                            }
+                        } else {
+                            Toast.makeText(log_in.this, "Roll number not found", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Toast.makeText(log_in.this, "Database error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    private void showProgress(boolean inProgress) {
+        progressBar.setVisibility(inProgress ? View.VISIBLE : View.GONE);
+        loginButton.setVisibility(inProgress ? View.GONE : View.VISIBLE);
     }
 }

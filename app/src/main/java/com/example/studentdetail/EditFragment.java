@@ -10,7 +10,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.fragment.app.Fragment;
@@ -59,6 +58,7 @@ public class EditFragment extends Fragment {
     private boolean isImageUploaded = false;
     private static final String PREFS_NAME = "UserPref";
     private static final String KEY_ROLL_NO = "roll_no";
+    private static final String KEY_NAME = "name"; // New constant for name preference
 
     public EditFragment() {
     }
@@ -66,7 +66,6 @@ public class EditFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         View view = inflater.inflate(R.layout.fragment_editfrag, container, false);
         initializeUIElements(view);
         setupAdapters();
@@ -95,10 +94,10 @@ public class EditFragment extends Fragment {
         dayScholarCheckBox = view.findViewById(R.id.Dayscholar);
         outpassCheckBox = view.findViewById(R.id.outpass);
         photoImageView = view.findViewById(R.id.Photo);
-        uploadButton = view.findViewById(R.id.button);
+        uploadButton = view.findViewById(R.id.b1);
         submitButton = view.findViewById(R.id.overall);
         nameEditText = view.findViewById(R.id.Name);
-        rollEditText = view.findViewById(R.id.Roll);
+        rollEditText = view.findViewById(R.id.rollno);
         dobEditText = view.findViewById(R.id.DOB);
         stayNoEditText = view.findViewById(R.id.stay_et);
         phoneEditText = view.findViewById(R.id.editTextPhone);
@@ -106,6 +105,13 @@ public class EditFragment extends Fragment {
         cgpaEditText = view.findViewById(R.id.cgpa);
         stayLabelTextView = view.findViewById(R.id.stay_no);
         busTextView = view.findViewById(R.id.bus);
+        SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("MySharedPref", Context.MODE_PRIVATE);
+        String rollNo = sharedPreferences.getString("roll no", "");
+        if (rollNo != null) {
+            rollEditText.setText(rollNo);
+            rollEditText.setEnabled(false);
+        }
+
         nameEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -252,88 +258,35 @@ public class EditFragment extends Fragment {
     private void displayImageFromFirebase() {
         String roll = rollEditText.getText().toString().trim();
         if (roll.isEmpty()) {
+            Toast.makeText(getContext(), "Please enter Roll number to view image.", Toast.LENGTH_SHORT).show();
             return;
         }
 
         StorageReference fileReference = storageReference.child(roll + ".jpg");
-        File localFile = new File(requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES), "download_image.jpg");
-
-        fileReference.getFile(localFile)
-                .addOnSuccessListener(taskSnapshot -> {
-                    Bitmap bitmap = BitmapFactory.decodeFile(localFile.getAbsolutePath());
-                    if (bitmap != null) {
-                        photoImageView.setImageBitmap(bitmap);
-                    } else {
-                        photoImageView.setImageResource(R.drawable.profile); // Default image
-                        Toast.makeText(getContext(), "Failed to decode image.", Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .addOnFailureListener(e -> {
-                    photoImageView.setImageResource(R.drawable.profile); // Default image
-                    Toast.makeText(getContext(), "Failed to load image: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    Log.e(TAG, "Failed to load image", e);
-                });
-    }
-
-    /**
-     * Setup the Submit Button to validate inputs and upload data to Firebase.
-     */
-    private void setupSubmitButton() {
-        submitButton.setOnClickListener(v -> {
-            if (validateInputs()) {
-                uploadData();
-                saveRollNumberToSharedPreferences();
-                navigateToHomeFragment();
-            }
+        fileReference.getBytes(MAX_DOWNLOAD_SIZE).addOnSuccessListener(bytes -> {
+            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+            photoImageView.setImageBitmap(bitmap);
+        }).addOnFailureListener(e -> {
+            Log.e(TAG, "Failed to retrieve image", e);
         });
     }
 
     /**
-     * Validate all input fields before uploading data.
-     *
-     * @return True if all inputs are valid, false otherwise.
+     * Toggle visibility of the image upload button based on name input.
      */
-    private boolean validateInputs() {
-        String name = nameEditText.getText().toString().trim();
-        String roll = rollEditText.getText().toString().trim();
-        String dob = dobEditText.getText().toString().trim();
-        String department = deptView.getText().toString().trim();
-        String year = yearView.getText().toString().trim();
-        String stayNo = stayNoEditText.getText().toString().trim();
-        String cgpa = cgpaEditText.getText().toString().trim();
-
-        if (name.isEmpty() || roll.isEmpty() || dob.isEmpty()
-                || department.isEmpty() || year.isEmpty() || cgpa.isEmpty()) {
-            Toast.makeText(getContext(), "Please fill all the details.", Toast.LENGTH_SHORT).show();
-            return false;
-        }
-
-        if (!hostelCheckBox.isChecked() && !dayScholarCheckBox.isChecked() && !outpassCheckBox.isChecked()) {
-            Toast.makeText(getContext(), "Please select Hostel, Dayscholar, or Outpass.", Toast.LENGTH_SHORT).show();
-            return false;
-        }
-
-        if ((hostelCheckBox.isChecked() || dayScholarCheckBox.isChecked()) && stayNo.isEmpty()) {
-            String label = hostelCheckBox.isChecked() ? "Room no" : "Bus no";
-            Toast.makeText(getContext(), "Please enter " + label + ".", Toast.LENGTH_SHORT).show();
-            return false;
-        }
-
-        if (outpassCheckBox.isChecked() && busTextView.getText().toString().isEmpty()) {
-            Toast.makeText(getContext(), "Please enter Bus no.", Toast.LENGTH_SHORT).show();
-            return false;
-        }
-
-        if (!isImageUploaded) {
-            Toast.makeText(getContext(), "Please upload your image.", Toast.LENGTH_SHORT).show();
-            return false;
-        }
-
-        return true;
+    private void toggleImageUploadVisibility() {
+        uploadButton.setVisibility(nameEditText.getText().toString().isEmpty() ? View.INVISIBLE : View.VISIBLE);
     }
 
     /**
-     * Upload user data to Firebase Realtime Database.
+     * Setup the submit button to handle data upload.
+     */
+    private void setupSubmitButton() {
+        submitButton.setOnClickListener(v -> uploadData());
+    }
+
+    /**
+     * Upload student data to Firebase Realtime Database.
      */
     private void uploadData() {
         String roll = rollEditText.getText().toString().trim();
@@ -347,92 +300,43 @@ public class EditFragment extends Fragment {
 
         studentRef.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
-                if (task.getResult().exists()) {
-                    Toast.makeText(getContext(), "Name was already inserted.", Toast.LENGTH_SHORT).show();
-                } else {
-                    String name = nameEditText.getText().toString().trim();
-                    String dob = dobEditText.getText().toString().trim();
-                    String department = deptView.getText().toString().trim();
-                    String year = yearView.getText().toString().trim();
-                    String phone = phoneEditText.getText().toString().trim();
-                    String address = addressEditText.getText().toString().trim();
-                    String cgpa = cgpaEditText.getText().toString().trim();
-                    String stayNo = stayNoEditText.getText().toString().trim();
+                String name = nameEditText.getText().toString().trim();
+                String dob = dobEditText.getText().toString().trim();
+                String department = deptView.getText().toString().trim();
+                String year = yearView.getText().toString().trim();
+                String phone = phoneEditText.getText().toString().trim();
+                String address = addressEditText.getText().toString().trim();
+                String cgpa = cgpaEditText.getText().toString().trim();
+                String stayNo = stayNoEditText.getText().toString().trim();
 
-                    studentRef.child("Name").setValue(name);
-                    studentRef.child("Roll").setValue(roll);
-                    studentRef.child("DOB").setValue(dob);
-                    studentRef.child("Department").setValue(department);
-                    studentRef.child("Year").setValue(year);
-                    studentRef.child("Phone").setValue(phone);
-                    studentRef.child("Address").setValue(address);
-                    studentRef.child("Stay").setValue(stayType);
+                studentRef.child("Name").setValue(name);
+                studentRef.child("DOB").setValue(dob);
+                studentRef.child("Department").setValue(department);
+                studentRef.child("Year").setValue(year);
+                studentRef.child("Phone").setValue(phone);
+                studentRef.child("Address").setValue(address);
+                studentRef.child("Stay").setValue(stayType);
 
-                    if (hostelCheckBox.isChecked() || dayScholarCheckBox.isChecked()) {
-                        studentRef.child("Stay_no").setValue(stayNo);
-                    }
-
-                    studentRef.child("CGPA").setValue(cgpa);
-
-                    Toast.makeText(getContext(), "Data uploaded successfully.", Toast.LENGTH_SHORT).show();
-                    saveRollNumberToSharedPreferences();
-                    navigateToHomeFragment();
+                if (hostelCheckBox.isChecked() || dayScholarCheckBox.isChecked()) {
+                    studentRef.child("Stay_no").setValue(stayNo);
                 }
+
+                studentRef.child("CGPA").setValue(cgpa);
+
+                Toast.makeText(getContext(), "Data uploaded successfully.", Toast.LENGTH_SHORT).show();
+                navigateToHomeFragment();
+
             } else {
                 Toast.makeText(getContext(), "Failed to check roll number existence.", Toast.LENGTH_SHORT).show();
             }
         });
     }
-
-
     /**
-     * Save the roll number to SharedPreferences for retrieval in HomeFragment.
-     */
-    private void saveRollNumberToSharedPreferences() {
-        String roll = rollEditText.getText().toString().trim();
-        if (!roll.isEmpty()) {
-            SharedPreferences sharedPref = requireActivity().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharedPref.edit();
-            editor.putString(KEY_ROLL_NO, roll);
-            editor.apply();
-            Log.d(TAG, "Roll number saved to SharedPreferences: " + roll);
-        }
-    }
-
-    /**
-     * Navigate back to HomeFragment after successful data upload.
+     * Navigate to the Home Fragment.
      */
     private void navigateToHomeFragment() {
-        // Optionally, you can pass data back using FragmentResult if needed
-        getParentFragmentManager().beginTransaction()
+        requireActivity().getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragment_container, new HomeFragment())
                 .commit();
-    }
-
-    /**
-     * Toggle the visibility of the image upload button based on the Name field.
-     */
-    private void toggleImageUploadVisibility() {
-        if (!nameEditText.getText().toString().trim().isEmpty()) {
-            uploadButton.setVisibility(View.VISIBLE);
-            busTextView.setVisibility(View.GONE);
-        } else {
-            uploadButton.setVisibility(View.GONE);
-        }
-    }
-
-    /**
-     * Display or hide the progress bar and upload button based on upload status.
-     *
-     * @param inProgress True to show progress bar, false to hide it.
-     */
-    private void toggleProgressBar(boolean inProgress) {
-        if (inProgress) {
-            progressBar.setVisibility(View.VISIBLE);
-            uploadButton.setEnabled(false);
-        } else {
-            progressBar.setVisibility(View.GONE);
-            uploadButton.setEnabled(true);
-        }
     }
 }

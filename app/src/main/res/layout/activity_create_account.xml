@@ -7,20 +7,22 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Create_account">
+
     <TextView
         android:id="@+id/t1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Welcome,"
+        android:text="Welcome"
         android:textColor="#F4F4F4"
         android:textSize="34sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.141"
+        app:layout_constraintHorizontal_bias="0.454"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.272" />
+        app:layout_constraintVertical_bias="0.246" />
+
     <TextView
         android:id="@+id/t2"
 
@@ -35,7 +37,8 @@
         app:layout_constraintHorizontal_bias="0.32"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.836" />
+        app:layout_constraintVertical_bias="0.86" />
+
 
     <TextView
         android:id="@+id/t3"
@@ -47,10 +50,10 @@
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.754"
+        app:layout_constraintHorizontal_bias="0.763"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.836" />
+        app:layout_constraintVertical_bias="0.86" />
 
     <EditText
         android:id="@+id/pass"
@@ -68,10 +71,31 @@
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.496"
+        app:layout_constraintHorizontal_bias="0.606"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.584" />
+        app:layout_constraintVertical_bias="0.581" />
+
+    <EditText
+        android:id="@+id/rollno"
+        android:layout_width="350dp"
+        android:layout_height="55dp"
+        android:background="@drawable/texbg"
+        android:backgroundTint="@color/white"
+        android:ems="10"
+        android:hint="Enter your Roll no"
+        android:inputType="textEmailAddress"
+        android:paddingLeft="10dp"
+        android:textColor="#000000"
+        android:textColorHint="#979494"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.606"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.343" />
 
     <EditText
         android:id="@+id/mail"
@@ -89,10 +113,10 @@
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.491"
+        app:layout_constraintHorizontal_bias="0.606"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.448" />
+        app:layout_constraintVertical_bias="0.463" />
 
     <ProgressBar
         android:id="@+id/pb"

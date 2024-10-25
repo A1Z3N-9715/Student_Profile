@@ -5,13 +5,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".aboutfrag">
+
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="About us"
-        android:textSize="30sp"
-        android:gravity="center"
+        android:layout_width="558dp"
+        android:layout_height="166dp"
         android:layout_centerInParent="true"
-        android:textColor="#2196F3"/>
+        android:gravity="center"
+        android:text="This application was developed by Abhiseelan and Manoj "
+        android:textColor="#000000"
+        android:textSize="30sp"
+        android:textStyle="bold" />
 
 </RelativeLayout>
